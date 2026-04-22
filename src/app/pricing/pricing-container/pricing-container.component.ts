@@ -58,34 +58,35 @@ import { AdditionalChargesComponent } from '../additional-charges/additional-cha
   `,
   styles: [`
     .container {
-      max-width: 1400px;
+      width: 100%;
+      max-width: 1800px;
       margin: 0 auto;
-      padding: 2rem;
+      padding: 1.5rem;
       font-family: 'Inter', system-ui, sans-serif;
     }
     .header {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 2rem;
+      margin-bottom: 1.5rem;
       padding-bottom: 1rem;
       border-bottom: 2px solid #e2e8f0;
     }
     .header h1 {
       margin: 0;
       color: #0f172a;
-      font-size: 1.875rem;
+      font-size: 1.5rem;
       font-weight: 700;
     }
     .actions {
       display: flex;
-      gap: 1rem;
+      gap: 0.75rem;
     }
     .btn-save {
       background: #10b981;
       color: white;
       border: none;
-      padding: 0.75rem 1.5rem;
+      padding: 0.5rem 1rem;
       border-radius: 0.5rem;
       font-weight: 600;
       cursor: pointer;
@@ -97,7 +98,7 @@ import { AdditionalChargesComponent } from '../additional-charges/additional-cha
       background: white;
       color: #ef4444;
       border: 1px solid #fca5a5;
-      padding: 0.75rem 1.5rem;
+      padding: 0.5rem 1rem;
       border-radius: 0.5rem;
       font-weight: 600;
       cursor: pointer;
@@ -109,7 +110,7 @@ import { AdditionalChargesComponent } from '../additional-charges/additional-cha
       background: #f1f5f9;
       color: #475569;
       border: 1px solid #cbd5e1;
-      padding: 0.75rem 1rem;
+      padding: 0.5rem 1rem;
       border-radius: 0.5rem;
       font-weight: 600;
       cursor: pointer;
@@ -120,17 +121,30 @@ import { AdditionalChargesComponent } from '../additional-charges/additional-cha
 
     .grid-layout {
       display: grid;
-      grid-template-columns: 1fr 350px;
-      gap: 2rem;
+      grid-template-columns: minmax(0, 1fr) 380px;
+      gap: 1.5rem;
       align-items: start;
     }
 
-    @media (max-width: 1024px) {
+    /* Make sidebar sticky so it stays on screen when scrolling the left table */
+    .sidebar-column {
+      position: sticky;
+      top: 1.5rem;
+      max-height: calc(100vh - 3rem);
+      overflow-y: auto;
+      padding-right: 0.5rem;
+    }
+
+    @media (max-width: 1200px) {
       .grid-layout { grid-template-columns: 1fr; }
+      .sidebar-column {
+        position: static;
+        max-height: none;
+      }
     }
 
     h2 {
-      font-size: 1.25rem;
+      font-size: 1.125rem;
       color: #475569;
       margin-top: 0;
       margin-bottom: 1rem;
