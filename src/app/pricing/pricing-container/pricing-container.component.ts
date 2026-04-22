@@ -13,7 +13,9 @@ import { AdditionalChargesComponent } from '../additional-charges/additional-cha
       <header class="header">
         <h1>Dynamic Pricing Management</h1>
         <div class="actions">
-          <button class="btn-clear" (click)="clearState()">Reset to Default</button>
+          <button class="btn-undo" [disabled]="!state.canUndo()" (click)="state.undo()">⟲ Undo</button>
+          <button class="btn-redo" [disabled]="!state.canRedo()" (click)="state.redo()">⟳ Redo</button>
+          <button class="btn-clear" (click)="clearState()">Reset</button>
           <button class="btn-save" (click)="save()">Save & View Source</button>
         </div>
       </header>
@@ -102,6 +104,19 @@ import { AdditionalChargesComponent } from '../additional-charges/additional-cha
       transition: all 0.2s;
     }
     .btn-clear:hover { background: #fef2f2; border-color: #ef4444; }
+
+    .btn-undo, .btn-redo {
+      background: #f1f5f9;
+      color: #475569;
+      border: 1px solid #cbd5e1;
+      padding: 0.75rem 1rem;
+      border-radius: 0.5rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .btn-undo:hover:not(:disabled), .btn-redo:hover:not(:disabled) { background: #e2e8f0; }
+    .btn-undo:disabled, .btn-redo:disabled { opacity: 0.5; cursor: not-allowed; }
 
     .grid-layout {
       display: grid;

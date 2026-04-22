@@ -1,60 +1,54 @@
-# Faya-angular-internship
-# DynamicPricingUi
+# Dynamic Pricing Management UI
 
-This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 21.2.7.
+This is a modern, reactive Angular 18+ web application designed to handle complex, nested, and matrix-based pricing structures seamlessly. 
 
-## Development server
+## 🚀 Key Features
 
-To start a local development server, run:
+### 1. **Deep Reactivity with Angular Signals**
+The entire application state is modeled using Angular's latest `signal()` and `computed()` primitives. There is **no NgRx** or cumbersome RxJS plumbing. Every table cell, configuration tier, and additional charge is bound directly to a signal. When you update a cell, the UI updates instantly, and the state changes are automatically tracked.
 
+### 2. **Flexible & Dynamic Data Parsing**
+The `PricingNormalizerService` parses dynamic, unstructured `pricing.json` mock data. Whether a pricing section is a simple "flat" array of prices or a "size-based matrix" (where prices are dependent on both Item Quantity Tiers and Item Sizes), the normalizer cleanly abstracts this away into standard `PricingSection` objects.
+
+### 3. **Dynamic Table Layouts using CSS Grid**
+The table logic allows users to seamlessly add (`+ Add Tier`) or remove columns. Instead of fragile `<table>` elements, it utilizes a deeply reactive `CSS Grid`. The grid columns are updated on-the-fly (`grid-template-columns` is a computed signal tied directly to the number of tiers), guaranteeing pixel-perfect alignment.
+
+### 4. **Undo / Redo History Stack**
+Because the state is highly normalized, every change triggers a debounce-free auto-save `effect()`. Every time an action occurs, a snapshot of the serialized state is pushed into a history stack. This allows for instantaneous "Undo" and "Redo" functionality across the entire pricing dashboard without complex reducers.
+
+### 5. **Clean Component Architecture**
+- **`PricingContainer`**: Root wrapper that fetches the data via HTTP and acts as the orchestrator.
+- **`PricingSection`**: Handles the UI layout for an entire pricing block, managing column additions and the dynamic grid structure.
+- **`PricingRow` & `PricingCell`**: Dumb, recursive components that purely bind to their reactive signal states (`WritableSignal<CellValue>`).
+- **`AdditionalCharges`**: A flexible side-panel that can render stitch formulas (`over $X, every $Y`), percentages, fixed price inputs, and size-tiered grids automatically.
+
+## 🛠 Setup & Local Development
+
+This project was generated using [Angular CLI](https://github.com/angular/angular-cli).
+
+### Prerequisites
+- Node.js (v18+)
+- npm
+
+### Installation
+Clone the repository and install the dependencies:
 ```bash
-ng serve
+git clone https://github.com/AjoJosee/Faya-angular-internship.git
+cd Faya-angular-internship
+npm install
 ```
 
-Once the server is running, open your browser and navigate to `http://localhost:4200/`. The application will automatically reload whenever you modify any of the source files.
-
-## Code scaffolding
-
-Angular CLI includes powerful code scaffolding tools. To generate a new component, run:
-
+### Running the App
+Start the local development server:
 ```bash
-ng generate component component-name
+npm run dev
+# or: ng serve
 ```
+Navigate to `http://localhost:4200/`. The app will automatically reload if you change any of the source files.
 
-For a complete list of available schematics (such as `components`, `directives`, or `pipes`), run:
+## 📈 Future Improvements
 
-```bash
-ng generate --help
-```
-
-## Building
-
-To build the project run:
-
-```bash
-ng build
-```
-
-This will compile your project and store the build artifacts in the `dist/` directory. By default, the production build optimizes your application for performance and speed.
-
-## Running unit tests
-
-To execute unit tests with the [Vitest](https://vitest.dev/) test runner, use the following command:
-
-```bash
-ng test
-```
-
-## Running end-to-end tests
-
-For end-to-end (e2e) testing, run:
-
-```bash
-ng e2e
-```
-
-Angular CLI does not come with an end-to-end testing framework by default. You can choose one that suits your needs.
-
-## Additional Resources
-
-For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
+While this is heavily optimized for a robust UI, potential production enhancements could include:
+1. **Zod Schema Validation:** Validate the incoming `pricing.json` structurally before parsing it to prevent UI errors from malformed backend data.
+2. **OnPush Change Detection:** Applying `ChangeDetectionStrategy.OnPush` across all components to ensure that Angular entirely skips checking components unless their bound signals have explicitly updated.
+3. **Backend Syncing:** Replace the `localStorage` saves with a debounced `HTTP PUT` request to synchronize the serialized pricing data to a remote database.

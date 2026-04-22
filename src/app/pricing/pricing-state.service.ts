@@ -26,12 +26,29 @@ export class PricingStateService {
 
   private initialized = false;
 
+  // ─── Undo / Redo State ────────────────────────────────────
+  private history: string[] = [];
+  private historyIndex = -1;
+  canUndo = signal(false);
+  canRedo = signal(false);
+
   constructor() {
-    // Auto-save
+    // Auto-save & History tracking
     effect(() => {
       const data = this.serialize();
       if (!this.initialized) return;
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+      
+      const str = JSON.stringify(data);
+      localStorage.setItem(STORAGE_KEY, str);
+
+      // We use untracked so we don't accidentally track historyIndex
+      if (this.history[this.historyIndex] !== str) {
+        this.history = this.history.slice(0, this.historyIndex + 1);
+        this.history.push(str);
+        this.historyIndex++;
+        this.canUndo.set(this.historyIndex > 0);
+        this.canRedo.set(this.historyIndex < this.history.length - 1);
+      }
     });
   }
 
@@ -42,9 +59,7 @@ export class PricingStateService {
     if (saved) {
       try {
         const parsed: SerializedState = JSON.parse(saved);
-        this.sections.set(this.normalizer.rebuildSections(parsed.sections));
-        this.ruiCharges.set(this.normalizer.rebuildCharges(parsed.ruiCharges));
-        this.frCharges.set(this.normalizer.rebuildCharges(parsed.frCharges));
+        this.loadFromSerialized(parsed);
         this.initialized = true;
         return;
       } catch {
@@ -64,6 +79,31 @@ export class PricingStateService {
     }
 
     this.initialized = true;
+  }
+
+  // ─── Undo / Redo Actions ──────────────────────────────────
+  undo() {
+    if (this.historyIndex > 0) {
+      this.historyIndex--;
+      this.loadFromSerialized(JSON.parse(this.history[this.historyIndex]));
+      this.canUndo.set(this.historyIndex > 0);
+      this.canRedo.set(this.historyIndex < this.history.length - 1);
+    }
+  }
+
+  redo() {
+    if (this.historyIndex < this.history.length - 1) {
+      this.historyIndex++;
+      this.loadFromSerialized(JSON.parse(this.history[this.historyIndex]));
+      this.canUndo.set(this.historyIndex > 0);
+      this.canRedo.set(this.historyIndex < this.history.length - 1);
+    }
+  }
+
+  private loadFromSerialized(parsed: SerializedState) {
+    this.sections.set(this.normalizer.rebuildSections(parsed.sections));
+    this.ruiCharges.set(this.normalizer.rebuildCharges(parsed.ruiCharges));
+    this.frCharges.set(this.normalizer.rebuildCharges(parsed.frCharges));
   }
 
   // ─── Column Management ────────────────────────────────────
