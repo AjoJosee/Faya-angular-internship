@@ -42,7 +42,7 @@ npm install
 Start the local development server:
 ```bash
 npm run dev
-# or: ng serve
+# or: npx @angular/cli@latest serve
 ```
 Navigate to `http://localhost:4200/`. The app will automatically reload if you change any of the source files.
 
