@@ -164,7 +164,7 @@ export class PricingContainerComponent implements OnInit {
   private http = inject(HttpClient);
 
   ngOnInit() {
-    this.http.get('/pricing.json').subscribe({
+    this.http.get('pricing.json').subscribe({
       next: (data) => {
         this.state.initialize(data);
       },
